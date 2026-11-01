@@ -1,0 +1,22 @@
+[project]
+name = "mailguard1"
+version = "1.0.0"
+description = "MailGuard1 Security Intelligence"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "pydantic",
+    "pydantic-settings",
+    "python-multipart"
+]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+extraPaths = [".", ".venv/Lib/site-packages"]
+
+[tool.pyrefly]
+venv = ".venv"
+extra_paths = [".", ".venv/Lib/site-packages"]

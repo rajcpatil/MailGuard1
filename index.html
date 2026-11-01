@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MailGuard</title>
+<style>
+:root{--bg:#f3f6f5;--surf:#fff;--ink:#14231f;--mute:#5e716b;--line:#dbe5e1;--brand:#0d6b5c;--brand-ink:#fff;--safe:#1f8a55;--safe-bg:#e3f4ea;--spam:#a86a00;--spam-bg:#fbeed0;--fraud:#c2322b;--fraud-bg:#fbe3e1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1614;--surf:#16211e;--ink:#e6f0ec;--mute:#93a8a1;--line:#263632;--brand:#3fbfa6;--brand-ink:#04211b;--safe:#4cc98a;--safe-bg:#12301f;--spam:#f0b84a;--spam-bg:#3a2d0e;--fraud:#ff7b72;--fraud-bg:#3d1816}}
+:root[data-theme="dark"]{--bg:#0e1614;--surf:#16211e;--ink:#e6f0ec;--mute:#93a8a1;--line:#263632;--brand:#3fbfa6;--brand-ink:#04211b;--safe:#4cc98a;--safe-bg:#12301f;--spam:#f0b84a;--spam-bg:#3a2d0e;--fraud:#ff7b72;--fraud-bg:#3d1816}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.logo{font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
+.logo svg{width:26px;height:26px}
+nav{display:flex;gap:4px;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:4px;margin-left:auto}
+nav button{border:0;background:none;color:var(--mute);font:inherit;font-weight:600;padding:7px 14px;border-radius:9px;cursor:pointer}
+nav button.on{background:var(--brand);color:var(--brand-ink)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:14px}
+.grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.bar{display:flex;align-items:center;gap:8px;padding:12px;border-bottom:1px solid var(--line)}
+.seg{display:flex;gap:4px}
+.seg button{border:1px solid var(--line);background:none;color:var(--mute);font:inherit;font-size:13px;padding:5px 11px;border-radius:99px;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--surf);border-color:var(--ink)}
+.btn{border:0;background:var(--brand);color:var(--brand-ink);font:inherit;font-weight:600;padding:9px 16px;border-radius:10px;cursor:pointer}
+.btn.sm{padding:6px 12px;font-size:13px;margin-left:auto}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+.list{max-height:520px;overflow:auto}
+.row{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;font:inherit;padding:12px 14px;cursor:pointer}
+.row:hover,.row.on{background:var(--bg)}
+.row .t{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.row .s{color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.chip.safe{background:var(--safe-bg);color:var(--safe)}.chip.spam{background:var(--spam-bg);color:var(--spam)}.chip.fraud{background:var(--fraud-bg);color:var(--fraud)}
+.empty{padding:32px 16px;text-align:center;color:var(--mute)}
+.detail{padding:20px}
+.detail h2{margin:0 0 2px;font-size:19px}
+.meta{color:var(--mute);font-size:13px;margin-bottom:12px;word-break:break-all}
+.body{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;font-size:14px;margin:0 0 18px;word-break:break-word}
+.verdict{display:flex;gap:14px;align-items:center;padding:14px;border-radius:12px;margin-bottom:16px}
+.verdict.safe{background:var(--safe-bg)}.verdict.spam{background:var(--spam-bg)}.verdict.fraud{background:var(--fraud-bg)}
+.verdict b{font-size:22px;font-family:Georgia,serif}
+.verdict.safe b{color:var(--safe)}.verdict.spam b{color:var(--spam)}.verdict.fraud b{color:var(--fraud)}
+.verdict small{display:block;color:var(--mute)}
+h3{font-size:14px;margin:18px 0 8px}
+ul.why{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+ul.why li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px}
+ul.why li i{font-style:normal;color:var(--fraud);font-weight:700;min-width:18px}
+ul.why li.ok i{color:var(--safe)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vs div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.vs span{display:block;color:var(--mute);font-size:13px}
+.vs .miss{border-color:var(--fraud)}
+form.scan{padding:20px;display:grid;gap:10px}
+label{font-size:13px;color:var(--mute);display:grid;gap:4px}
+input,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%}
+textarea{min-height:130px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.kpis{grid-template-columns:1fr}}
+.kpi{padding:14px 16px}.kpi b{display:block;font:700 28px Georgia,serif}.kpi span{color:var(--mute);font-size:13px}
+.cols{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+@media(max-width:800px){.cols{grid-template-columns:1fr}}
+.card{padding:18px;margin-bottom:16px}.card h3{margin-top:0}
+.off{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;word-break:break-all;gap:10px}
+.off:last-child{border:0}
+.meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 12px}
+.meter i{display:block;height:100%}
+input[type=range]{padding:0;accent-color:var(--brand)}
+.toast{position:fixed;right:16px;top:calc(16px + env(safe-area-inset-top,0px));background:var(--fraud);color:#fff;padding:12px 16px;border-radius:12px;max-width:320px;box-shadow:0 8px 24px rgba(0,0,0,.25);transform:translateY(-140%);transition:transform .3s;z-index:9}
+.toast.show{transform:none}
+.hide{display:none}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z"/><path d="M8.5 11.5l2.5 2.5 4.5-5"/></svg>MailGuard</div>
+  <nav id="nav"><button data-v="inbox" class="on">Inbox</button><button data-v="scan">Check an email</button><button data-v="dash">Dashboard</button></nav>
+  <div id="authArea" style="display:flex;align-items:center;gap:8px">
+    <span id="userBadge" class="chip" style="display:none;background:var(--surf);border:1px solid var(--line);font-size:13px;padding:4px 10px"></span>
+    <button id="btnGmail" class="btn sm" style="display:none;margin-left:0"></button>
+    <a id="linkLogin" href="/login" class="btn sm" style="text-decoration:none;display:inline-flex;align-items:center">Sign In</a>
+    <button id="btnLogout" class="btn sm ghost" style="display:none;margin-left:0">Log out</button>
+  </div>
+</header>
+
+<section id="inbox">
+  <div class="grid">
+    <div class="panel">
+      <div class="bar"><div class="seg" id="box"><button data-b="inbox" class="on">Inbox <span id="nIn"></span></button><button data-b="quar">Quarantine <span id="nQ"></span></button></div><button class="btn sm" id="recv">Receive email</button></div>
+      <div class="list" id="list"></div>
+    </div>
+    <div class="panel" id="detail"></div>
+  </div>
+</section>
+
+<section id="scan" class="hide">
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <form class="panel scan" id="form">
+      <div class="two"><label>From<input id="fFrom" value="security@secure-bank-verify.xyz"></label><label>Reply-to (optional)<input id="fReply" placeholder="reply@example.com"></label></div>
+      <label>Subject<input id="fSub" value="Account will be suspended"></label>
+      <label>Message<textarea id="fBody">Dear customer, your account will be suspended. Click http://secure-bank-verify.xyz to update KYC immediately.</textarea></label>
+      <label>Attachment name (optional)<input id="fAtt" placeholder="invoice.html"></label>
+      <button class="btn" type="submit">Check email</button>
+    </form>
+    <div class="panel" id="scanOut"><div class="empty">Paste an email and press Check email to see the verdict and the reasons.</div></div>
+  </div>
+</section>
+
+<section id="dash" class="hide"></section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const state={threshold:0.5,emails:[],sel:null,box:'inbox',
+  days:[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],
+  offenders:{},
+  scanned:0,times:[]};
+const REP={'company.com':{age:2400,rep:0},'hdfcbank.com':{age:9000,rep:0},'secure-bank-verify.xyz':{age:6,rep:31},'micros0ft-support.com':{age:11,rep:18},'prize-claim.top':{age:4,rep:44},'deals-mart.biz':{age:120,rep:6}};
+const BAD_TLD=/\.(xyz|top|biz|click|ru|work|zip|info)$/;
+const BRANDS=['bank','paypal','microsoft','amazon','google','hdfc','sbi','icici'];
+const SAMPLES=[
+ {from:'hr@company.com',subject:'Interview schedule for Thursday',body:'Hi Aarav,\nThanks for applying. We would like to invite you for an interview on Thursday at 11 am.\nRegards,\nPriya (HR)'},
+ {from:'alerts@hdfcbank.com',subject:'Your monthly statement is ready',body:'Your statement for August is available. Log in at https://www.hdfcbank.com to view it. We never ask for your PIN or OTP by email.'},
+ {from:'offers@deals-mart.biz',subject:'MEGA SALE: 70% off, limited time!',body:'Buy now and get 70% off everything. Limited time offer. Unsubscribe at http://deals-mart.biz/unsub'},
+ {from:'security@secure-bank-verify.xyz',subject:'Account will be suspended',body:'Dear customer, your account will be suspended. Click http://secure-bank-verify.xyz to update KYC immediately.'},
+ {from:'accounts@micros0ft-support.com',replyTo:'m.support77@gmail.com',subject:'Invoice #4471 for your review',body:'Hello,\nPlease find the invoice attached. Sign in to your Microsoft account to confirm the payment details within 24 hours.',attach:'invoice.html'},
+ {from:'claims@prize-claim.top',subject:'You won ₹50 lakh!',body:'Congratulations winner! You won ₹50 lakh in our lottery. Send your details and card number to claim your prize.'},
+ {from:'rahul@company.com',subject:'Team lunch tomorrow',body:'Hey, lunch at 1 pm tomorrow near the office. Let me know if you are joining.'}
+];
+let next=3;
+
+function analyze(m){
+ const t0=performance.now(),txt=(m.subject+' '+m.body).toLowerCase(),why=[];let fraud=0,spam=0;
+ const add=(k,w,msg)=>{why.push({bad:true,msg});k==='f'?fraud+=w:spam+=w};
+ if(/urgent|immediately|suspended|blocked|within 24|expire|final notice/.test(txt))add('f',.22,'Urgent or threatening wording pushes you to act fast.');
+ if(/kyc|password|otp|verify|log ?in|sign in|card number|\bpin\b|update.*details/.test(txt))add('f',.2,'Asks for credentials or personal details.');
+ if(/\bwon\b|lottery|lakh|prize|claim|inheritance/.test(txt))add('f',.3,'Prize or money claim, a classic scam pattern.');
+ if(/% off|sale|buy now|limited time|unsubscribe|discount/.test(txt))add('s',.4,'Promotional wording typical of bulk spam.');
+ const dom=(m.from.split('@')[1]||'').toLowerCase(),r=REP[dom]||{age:null,rep:0};
+ const urls=[...txt.matchAll(/https?:\/\/([^\s\/]+)/g)].map(x=>x[1]);
+ urls.forEach(h=>{if(BAD_TLD.test(h))add('f',.2,`Link domain ${h} uses a high-risk ending.`)});
+ const brand=BRANDS.find(b=>txt.includes(b)),badLink=urls.find(h=>brand&&!h.includes(brand+'.')&&!h.endsWith(brand+'.com'));
+ if(brand&&badLink&&!dom.includes(brand+'.'))add('f',.2,`Mentions "${brand}" but the link goes to ${badLink}.`);
+ if(/[a-z]0[a-z]|[a-z]1[a-z]/.test(dom.split('.')[0]))add('f',.3,`Sender domain ${dom} imitates a known brand (digit swapped for a letter).`);
+ if(r.age!==null&&r.age<60)add('f',.15,`Sender domain registered only ${r.age} days ago.`);
+ if(r.rep>0)add(r.rep>10?'f':'s',.2,`Sender domain reported ${r.rep} times by other users.`);
+ if(m.replyTo&&m.replyTo.split('@')[1]!==dom)add('f',.2,`Reply-to (${m.replyTo}) differs from the sender domain.`);
+ if(m.attach&&/\.(exe|zip|html|scr|js)$/i.test(m.attach))add('f',.2,`Risky attachment type: ${m.attach}.`);
+ let score=Math.min(1,fraud+spam),type=fraud>=spam?'fraud':'spam';
+ if(score<.3){type='safe';why.length=0;why.push({bad:false,msg:'Wording looks normal and no risky links or attachments were found.'});if(r.age>365)why.push({bad:false,msg:`Sender domain is established (${Math.round(r.age/365)}+ years) with no reports.`})}
+ const conf=type==='safe'?Math.round((1-score)*100):Math.min(99,Math.round(55+score*45));
+ const kw=/lottery|winner|viagra|free money|claim your prize/.test(txt);
+ return {...m,score,type,conf,why,ms:(performance.now()-t0).toFixed(1),kwFlag:kw,
+  action:type!=='safe'&&score>=state.threshold?'blocked':type!=='safe'?'flagged':'delivered'};
+}
+function process(m,live=true){
+ const e=analyze(m);e.id=state.emails.length+1;e.time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+ state.emails.unshift(e);state.scanned++;state.times.push(+e.ms);
+ if(live&&e.action==='blocked'){const d=state.days[6];d[e.type==='fraud'?1:0]++;
+  const k=e.from.split('@')[1];state.offenders[k]=(state.offenders[k]||0)+1;
+  toast(`${e.type==='fraud'?'Fraud attempt':'Spam'} blocked from ${k}`)}
+ return e;
+}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),3500)}
+const label={safe:'Safe',spam:'Spam',fraud:'Fraud'};
+
+function renderList(){
+ const inb=state.emails.filter(e=>e.action!=='blocked'),q=state.emails.filter(e=>e.action==='blocked');
+ $('#nIn').textContent=inb.length;$('#nQ').textContent=q.length;
+ const items=state.box==='inbox'?inb:q;
+ $('#list').innerHTML=items.length?items.map(e=>`<button class="row ${state.sel===e.id?'on':''}" data-id="${e.id}"><div class="t"><span>${esc(e.from_name || e.from.split('@')[0])}</span><span class="chip ${e.type}">${label[e.type]}${e.action==='flagged'?' (warning)':''}</span></div><div class="s">${esc(e.subject)}</div></button>`).join(''):`<div class="empty">${state.box==='quar'?'Nothing quarantined yet.':'Inbox is empty. Click "Scan Gmail" to analyze your connected mailbox.'}</div>`;
+}
+function detailHTML(e){
+ const act={blocked:'Moved to Quarantine automatically.',flagged:'Kept in Inbox with a warning (below the block threshold).',delivered:'Delivered to Inbox.'}[e.action];
+ return `<div class="detail"><h2>${esc(e.subject)}</h2><div class="meta">From ${esc(e.from)}${e.time?' · '+esc(e.time):''}${e.replyTo?' · Reply-to '+esc(e.replyTo):''}${e.attach?' · Attachment '+esc(e.attach):''}</div>
+ <div class="verdict ${e.type}"><b>${label[e.type]}</b><div>${e.conf}% confidence<small>${act}</small></div></div>
+ <pre class="body">${esc(e.body)}</pre>
+ <h3>Why this verdict</h3><ul class="why">${e.why.map(w=>`<li class="${w.bad?'':'ok'}"><i>${w.bad?'!':'✓'}</i><span>${esc(w.msg)}</span></li>`).join('')}</ul>
+ <h3>Compared with a plain keyword filter</h3><div class="vs">
+  <div class="${e.type!=='safe'&&!e.kwFlag?'miss':''}"><span>Keyword filter</span>${e.kwFlag?'Flagged':(e.type!=='safe'?'Missed this threat':'Passed')}</div>
+  <div><span>MailGuard</span>${e.type!=='safe'?'Caught it':'Passed'}</div></div>
+ ${e.action==='blocked'?'<div style="margin-top:14px"><button class="btn ghost" data-restore="'+e.id+'">Not a threat, restore to Inbox</button></div>':''}</div>`;
+}
+function renderDetail(){
+ const e=state.emails.find(x=>x.id===state.sel);
+ $('#detail').innerHTML=e?detailHTML(e):'<div class="empty">Select an email to see its verdict and the reasons behind it.</div>';
+}
+function renderDash(){
+ const spamT=state.days.reduce((a,d)=>a+d[0],0),fraT=state.days.reduce((a,d)=>a+d[1],0),sum=spamT+fraT;
+ // Use real server KPIs if available (set by mailguard-api.js after /api/dashboard/stats fetch)
+ const threatsBlocked = (state._threatsBlocked !== undefined) ? state._threatsBlocked : sum;
+ const fraudPct = (state._fraudPct !== undefined) ? state._fraudPct : (sum>0?Math.round(fraT/sum*100):0);
+ const mixSpam = (state._threatMix) ? state._threatMix.spam : spamT;
+ const mixFraud = (state._threatMix) ? state._threatMix.fraud : fraT;
+ const mixSum = mixSpam + mixFraud;
+ const mx=Math.max(1, ...state.days.map(d=>d[0]+d[1]));
+ const names=[];
+ for(let i=6;i>=0;i--){if(i===0){names.push('Today')}else{const d=new Date();d.setDate(d.getDate()-i);names.push(d.toLocaleDateString('en-US',{weekday:'short'}))}}
+ const bars=state.days.map((d,i)=>{const x=20+i*58,h1=mx?(d[0]/mx)*120:0,h2=mx?(d[1]/mx)*120:0;
+  return `<rect x="${x}" y="${140-h1}" width="34" height="${h1}" rx="3" fill="var(--spam)"/><rect x="${x}" y="${140-h1-h2}" width="34" height="${h2}" rx="3" fill="var(--fraud)"/><text x="${x+17}" y="158" text-anchor="middle" font-size="11" fill="var(--mute)">${names[i]}</text>`}).join('');
+ const off=Object.entries(state.offenders).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ $('#dash').innerHTML=`<div class="kpis">
+  <div class="panel kpi"><b>${state.scanned.toLocaleString()}</b><span>Emails scanned</span></div>
+  <div class="panel kpi"><b>${threatsBlocked}</b><span>Threats blocked (7 days)</span></div>
+  <div class="panel kpi"><b>${fraudPct}%</b><span>Of threats were fraud</span></div></div>
+ <div class="cols"><div>
+  <div class="panel card"><h3>Blocked per day</h3><svg viewBox="0 0 420 165" width="100%" role="img" aria-label="Blocked spam and fraud emails per day">${bars}</svg>
+   <div style="font-size:13px;color:var(--mute)"><span style="color:var(--spam)">■</span> Spam &nbsp; <span style="color:var(--fraud)">■</span> Fraud</div></div>
+  <div class="panel card"><h3>Blocking sensitivity</h3>
+   <label>Block threats scored ${Math.round(state.threshold*100)}% or higher<input type="range" id="thr" min="30" max="90" value="${state.threshold*100}"></label>
+   <div style="font-size:13px;color:var(--mute)">Lower blocks more but risks quarantining genuine mail. Higher blocks less but lets more through with a warning.</div></div></div>
+ <div><div class="panel card"><h3>Threat mix</h3>
+  <div style="font-size:14px">Fraud: ${mixFraud}</div><div class="meter"><i style="width:${mixSum?mixFraud/mixSum*100:0}%;background:var(--fraud)"></i></div>
+  <div style="font-size:14px">Spam: ${mixSpam}</div><div class="meter"><i style="width:${mixSum?mixSpam/mixSum*100:0}%;background:var(--spam)"></i></div></div>
+  <div class="panel card"><h3>Repeat offenders</h3>${off.map(([d,n])=>`<div class="off"><span>${esc(d)}</span><b>${n} blocked</b></div>`).join('')}</div></div></div>`;
+ const t=$('#thr');if(t)t.oninput=ev=>{state.threshold=ev.target.value/100;ev.target.parentNode.firstChild.textContent=`Block threats scored ${ev.target.value}% or higher`};
+}
+function show(v){['inbox','scan','dash'].forEach(x=>$('#'+x).classList.toggle('hide',x!==v));
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='dash')renderDash()}
+$('#nav').onclick=e=>{if(e.target.dataset.v)show(e.target.dataset.v)};
+$('#box').onclick=e=>{const b=e.target.closest('button');if(!b)return;state.box=b.dataset.b;document.querySelectorAll('#box button').forEach(x=>x.classList.toggle('on',x===b));const valid=state.emails.filter(x=>state.box==='quar'?x.action==='blocked':x.action!=='blocked');state.sel=valid.length>0?valid[0].id:null;renderList();renderDetail()};
+$('#list').onclick=e=>{const r=e.target.closest('.row');if(r){state.sel=+r.dataset.id;renderList();renderDetail()}};
+$('#detail').onclick=e=>{const id=e.target.dataset.restore;if(id){const m=state.emails.find(x=>x.id==id);m.action='delivered';state.box='inbox';document.querySelectorAll('#box button').forEach(x=>x.classList.toggle('on',x.dataset.b==='inbox'));renderList();renderDetail();toast2('Restored to Inbox. Sender kept on watch.')}};
+function toast2(t){toast(t);$('#toast').style.background='var(--brand)';setTimeout(()=>$('#toast').style.background='',3800)}
+$('#recv').onclick=()=>{const e=process(SAMPLES[next%SAMPLES.length]);next++;state.sel=e.id;state.box=e.action==='blocked'?'quar':'inbox';
+ document.querySelectorAll('#box button').forEach(x=>x.classList.toggle('on',x.dataset.b===state.box));renderList();renderDetail()};
+$('#form').onsubmit=ev=>{ev.preventDefault();const e=analyze({from:$('#fFrom').value.trim(),replyTo:$('#fReply').value.trim(),subject:$('#fSub').value,body:$('#fBody').value,attach:$('#fAtt').value.trim()});
+ $('#scanOut').innerHTML=detailHTML(e).replace(/<div style="margin-top:14px">.*?<\/div>/s,'')};
+renderList();renderDetail();
+</script>
+<script src="mailguard-api.js?v=2"></script>
+</body>
+</html>
