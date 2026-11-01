@@ -178,6 +178,15 @@ class HeuristicBaselineDetector(BaseDetectionEngine):
                 add_indicator("f", 0.20, f"Risky attachment type: {att_clean}.")
 
         # 9. Verdict Determination & Score Normalization
+        is_official_provider = any(
+            sender_domain.endswith(d)
+            for d in ("google.com", "accounts.google.com", "openai.com", "tm.openai.com", "x.ai", "anthropic.com", "claude.com", "replit.com", "render.com", "supabase.com", "mcdonalds.com", "canva.com")
+        ) and not any(why_item.get("bad") and "high-risk ending" in why_item.get("msg", "") for why_item in why)
+
+        if is_official_provider and not self.TYPOSQUAT_REGEX.search(sender_domain):
+            fraud_score = min(0.10, fraud_score)
+            spam_score = min(0.35, spam_score)
+
         total_score = min(1.0, fraud_score + spam_score)
         verdict_type = "fraud" if fraud_score >= spam_score else "spam"
 

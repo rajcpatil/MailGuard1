@@ -331,16 +331,17 @@ def get_dashboard_metrics(db: Session, user_id: Optional[int] = None) -> Dict[st
     fraud_total = 0
 
     records = _build_scoped_scan_query(db, user_id=user_id).all()
+    blocked_offenders: Dict[str, int] = {}
+    all_threat_offenders: Dict[str, int] = {}
 
     for r in records:
-        if r.action == "blocked":
+        if r.verdict_type != "safe":
             if r.verdict_type == "fraud":
                 fraud_total += 1
             else:
                 spam_total += 1
-
             dom = r.sender_domain
-            offenders[dom] = offenders.get(dom, 0) + 1
+            all_threat_offenders[dom] = all_threat_offenders.get(dom, 0) + 1
 
             # Place scan in the 7-day chart bucket
             rec_date = r.created_at or now
@@ -352,9 +353,14 @@ def get_dashboard_metrics(db: Session, user_id: Optional[int] = None) -> Dict[st
                 else:
                     days[bucket][0] += 1
 
+        if r.action == "blocked":
+            dom = r.sender_domain
+            blocked_offenders[dom] = blocked_offenders.get(dom, 0) + 1
+
     total_scanned = len(records)
     threats_sum = spam_total + fraud_total
     threats_7d = sum(d[0] + d[1] for d in days)
+    offenders = blocked_offenders if blocked_offenders else all_threat_offenders
 
     fraud_pct = int(round((fraud_total / threats_sum * 100))) if threats_sum > 0 else 0
 
