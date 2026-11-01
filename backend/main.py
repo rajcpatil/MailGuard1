@@ -131,6 +131,24 @@ async def serve_integration_js():
     return {"error": "mailguard-api.js not found"}
 
 
+# Serve public Privacy Policy for Google OAuth verification
+@app.get("/privacy", include_in_schema=False)
+async def serve_privacy():
+    privacy_file = BASE_DIR / "privacy.html"
+    if privacy_file.exists():
+        return FileResponse(privacy_file, media_type="text/html", headers=NO_CACHE_HEADERS)
+    return RedirectResponse(url="/")
+
+
+# Serve public Terms of Service for Google OAuth verification
+@app.get("/terms", include_in_schema=False)
+async def serve_terms():
+    terms_file = BASE_DIR / "terms.html"
+    if terms_file.exists():
+        return FileResponse(terms_file, media_type="text/html", headers=NO_CACHE_HEADERS)
+    return RedirectResponse(url="/")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
